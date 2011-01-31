@@ -1,0 +1,543 @@
+<?xml version="1.0"?>
+<TEI xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns:s="http://www.ascc.net/xml/schematron"
+  xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>MONK_TEIAnalytics</title>
+        <author>Brian Pytlik Zillig, Syd Bauman, Julia Flanders, and Steve Ramsay</author>
+      </titleStmt>
+      <publicationStmt>
+        <p>for use by the MONK Project</p>
+      </publicationStmt>
+      <sourceDesc>
+        <p>created on Wednesday 10th October 2007 01:33:55 PM by the form at
+          http://www.tei-c.org.uk/Roma/</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <front>
+      <divGen type="toc"/>
+    </front>
+    <body>
+      <p>Target schema for MONK ingestion transformation.</p>
+      <schemaSpec ident="TEIAnalytics" docLang="en" xml:lang="en" prefix="monk_">
+
+        <moduleRef key="core"/>
+        <moduleRef key="tei"/>
+        <moduleRef key="header"/>
+        <moduleRef key="textstructure"/>
+        <moduleRef key="transcr"/>
+        <moduleRef key="analysis"/>
+        <moduleRef key="figures"/>
+        <moduleRef key="gaiji"/>
+        <moduleRef key="linking"/>
+        <moduleRef key="drama"/>
+          
+          <elementSpec module="core" ident="postscript" mode="change">
+              <content>
+                  <rng:ref name="macro.noteContent"/>
+              </content>
+          </elementSpec>
+
+        <elementSpec ident="sb" mode="add">
+          <gloss>sentence break</gloss>
+          <desc>signals a break between sentences.</desc>
+          <content>
+            <rng:empty/>
+          </content>
+          <classes>
+            <memberOf key="model.milestoneLike"/>
+          </classes>
+        </elementSpec>
+        
+        <!-- change hi tag so it can be child of w -->
+        <elementSpec ident="hi" mode="change">
+          <equiv/>
+          <gloss>highlighted text</gloss>
+          <desc> (highlighted) marks a word or phrase as graphically distinct from the surrounding
+            text, for reasons concerning which no claim is made. </desc>
+          <datatype>
+            <rng:ref name="att.global.attributes"/>
+            <rng:ref name="macro.xtext"/>
+          </datatype>
+          <classes>
+            <memberOf key="model.hiLike"/>
+          </classes>
+          <content>
+            <rng:ref name="macro.paraContent"/>
+          </content>
+        </elementSpec>
+        
+        
+        <!-- make the @scheme of keywords element optional -->
+        <elementSpec ident="keywords" module="header" mode="change">
+          <attList>
+            <attDef ident="scheme" mode="change" usage="opt">
+              <desc>identifies the controlled vocabulary within which the set of&#xD; keywords
+                concerned is defined.</desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="data.pointer"/>
+              </datatype>
+            </attDef>
+          </attList>
+        </elementSpec>
+
+        <elementSpec ident="sub" mode="add">
+          <equiv name="subscript"/>
+          <datatype>
+            <rng:ref name="att.global.attributes"/>
+            <rng:ref name="macro.xtext"/>
+          </datatype>
+          <classes>
+            <memberOf key="model.hiLike"/>
+          </classes>
+          <content>
+            <rng:ref name="macro.paraContent"/>
+          </content>
+        </elementSpec>
+
+        <elementSpec ident="sup" mode="add">
+          <equiv name="superscript"/>
+          <datatype>
+            <rng:ref name="att.global.attributes"/>
+            <rng:ref name="macro.xtext"/>
+          </datatype>
+          <classes>
+            <memberOf key="model.hiLike"/>
+          </classes>
+          <content>
+            <rng:ref name="macro.paraContent"/>
+          </content>
+        </elementSpec>
+
+        <elementSpec ident="title" mode="change">
+          <content>
+            <rng:ref name="macro.paraContent"/>
+            <s:pattern name="Inside header, titles must be plain text">
+              <s:rule context="tei:teiHeader//tei:title">
+                <s:report test="*"> Titles should not have child elements in teiHeader </s:report>
+              </s:rule>
+            </s:pattern>
+          </content>
+        </elementSpec>
+
+        <elementSpec ident="w" mode="change">
+          <classes>
+            <memberOf key="model.segLike"/>
+          </classes>
+          <content>
+            <rng:optional>
+              <rng:attribute name="subtype">
+                <rng:ref name="data.word"/>
+              </rng:attribute>
+            </rng:optional>
+            <rng:ref name="macro.paraContent"/>
+          </content>
+          <attList>
+            <attDef ident="eos" mode="add" usage="opt">
+              <desc>The value of eos is 0 or 1 and marks whether the sentences ends or not. </desc>
+              <datatype minOccurs="0" maxOccurs="1">
+                <rng:ref name="data.numeric"/>
+              </datatype>
+              <valList type="closed">
+                <valItem ident="0"/>
+                <valItem ident="1"/>
+              </valList>
+            </attDef>
+            <attDef ident="lem" mode="add" usage="opt">
+              <desc>The value of lem is the lemma or dictionary entry form of the word. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+            </attDef>
+            <attDef ident="pos" mode="add" usage="opt">
+              <desc>The value of pos is the part of speech. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+            </attDef>
+            <attDef ident="reg" mode="add" usage="opt">
+              <desc>The value of reg is the standard modern spelling of the word. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+            </attDef>
+            <attDef ident="spe" mode="add" usage="opt">
+              <desc>The value of spe is the original spelling minus typographical oddities. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+            </attDef>
+            <attDef ident="tok" mode="add" usage="opt">
+              <desc>The value of tok is the complete token as opposed to the content of the w
+                element, which may be a split token. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+            </attDef>
+            <attDef ident="ord" mode="add" usage="opt">
+              <desc>The value of ord is the order of the word in the text regardless of the reading
+                order. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:ref name="data.numeric"/>
+              </datatype>
+            </attDef>
+            <attDef ident="part" mode="add" usage="opt">
+              <desc>The value of part marks whether the token was split or not. </desc>
+              <datatype minOccurs="1" maxOccurs="1">
+                <rng:text/>
+              </datatype>
+              <valList type="closed">
+                <valItem ident="Y"/>
+                <valItem ident="N"/>
+              </valList>
+            </attDef>
+          </attList>
+        </elementSpec>
+
+        <elementSpec module="textstructure" ident="div1" mode="delete"/>
+
+        <elementSpec module="textstructure" ident="div2" mode="delete"/>
+
+        <elementSpec module="textstructure" ident="div3" mode="delete"/>
+
+        <elementSpec module="textstructure" ident="div4" mode="delete"/>
+
+        <elementSpec module="textstructure" ident="div5" mode="delete"/>
+
+        <elementSpec module="textstructure" ident="div6" mode="delete"/>
+
+        <elementSpec module="core" ident="abbr" mode="delete"/>
+
+        <elementSpec module="core" ident="expan" mode="delete"/>
+
+        <elementSpec module="transcr" ident="addSpan" mode="delete"/>
+
+        <elementSpec module="transcr" ident="damage" mode="delete"/>
+
+        <elementSpec module="transcr" ident="damageSpan" mode="delete"/>
+
+        <elementSpec module="transcr" ident="delSpan" mode="delete"/>
+
+        <elementSpec module="transcr" ident="facsimile" mode="delete"/>
+
+        <elementSpec module="transcr" ident="fw" mode="delete"/>
+
+        <elementSpec module="transcr" ident="hand" mode="delete"/>
+
+        <elementSpec module="transcr" ident="handList" mode="delete"/>
+
+        <elementSpec module="transcr" ident="handShift" mode="delete"/>
+
+        <elementSpec module="transcr" ident="space" mode="delete"/>
+
+        <elementSpec module="transcr" ident="subst" mode="delete"/>
+
+        <elementSpec module="transcr" ident="supplied" mode="delete"/>
+
+        <elementSpec module="transcr" ident="surface" mode="delete"/>
+
+        <elementSpec module="transcr" ident="zone" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="char" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="charDecl" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="charProp" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="glyph" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="glyphName" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="localName" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="mapping" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="unicodeName" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="value" mode="delete"/>
+
+        <elementSpec module="figures" ident="formula" mode="delete"/>
+
+        <elementSpec module="core" ident="binaryObject" mode="delete"/>
+
+        <elementSpec module="core" ident="postBox" mode="delete"/>
+
+        <elementSpec module="core" ident="postCode" mode="delete"/>
+
+        <elementSpec module="transcr" ident="restore" mode="delete"/>
+
+        <!-- elements removed 11/22/07 -->
+
+        <elementSpec module="core" ident="abbr" mode="delete"/>
+
+        <elementSpec module="transcr" ident="am" mode="delete"/>
+
+        <elementSpec module="core" ident="analytic" mode="delete"/>
+
+        <elementSpec module="linking" ident="anchor" mode="delete"/>
+
+        <elementSpec module="header" ident="appinfo" mode="delete"/>
+
+        <elementSpec module="header" ident="application" mode="delete"/>
+
+        <elementSpec module="header" ident="authority" mode="delete"/>
+
+        <elementSpec module="core" ident="biblscope" mode="delete"/>
+
+        <elementSpec module="core" ident="biblstruct" mode="delete"/>
+
+        <elementSpec module="header" ident="catref" mode="delete"/>
+
+        <elementSpec module="core" ident="cb" mode="delete"/>
+
+        <elementSpec module="gaiji" ident="charname" mode="delete"/>
+
+        <elementSpec module="analysis" ident="cl" mode="delete"/>
+
+        <elementSpec module="header" ident="classcode" mode="delete"/>
+
+        <elementSpec module="header" ident="classdecl" mode="delete"/>
+
+        <elementSpec module="header" ident="correction" mode="delete"/>
+
+        <elementSpec module="header" ident="creation" mode="delete"/>
+
+        <elementSpec module="header" ident="crefpattern" mode="delete"/>
+
+        <elementSpec module="core" ident="del" mode="delete"/>
+
+        <elementSpec module="core" ident="desc" mode="delete"/>
+
+        <elementSpec module="core" ident="distinct" mode="delete"/>
+
+        <elementSpec module="header" ident="distributor" mode="delete"/>
+
+        <elementSpec module="core" ident="divgen" mode="delete"/>
+
+        <elementSpec module="drama" ident="epilogue" mode="delete"/>
+
+        <elementSpec module="transcr" ident="ex" mode="delete"/>
+
+        <elementSpec module="header" ident="funder" mode="delete"/>
+
+        <elementSpec module="header" ident="geodecl" mode="delete"/>
+
+        <elementSpec module="core" ident="gloss" mode="delete"/>
+
+        <elementSpec module="core" ident="graphic" mode="delete"/>
+
+        <elementSpec module="header" ident="handnote" mode="delete"/>
+
+        <elementSpec module="transcr" ident="handnotes" mode="delete"/>
+
+        <elementSpec module="core" ident="headitem" mode="delete"/>
+
+        <elementSpec module="core" ident="headlabel" mode="delete"/>
+
+        <elementSpec module="header" ident="hyphenation" mode="delete"/>
+
+        <elementSpec module="core" ident="imprint" mode="delete"/>
+
+        <elementSpec module="core" ident="index" mode="delete"/>
+
+        <elementSpec module="analysis" ident="interp" mode="delete"/>
+
+        <elementSpec module="analysis" ident="interpgrp" mode="delete"/>
+
+        <elementSpec module="header" ident="interpretation" mode="delete"/>
+
+        <elementSpec module="linking" ident="join" mode="delete"/>
+
+        <elementSpec module="linking" ident="joingrp" mode="delete"/>
+
+        <elementSpec module="linking" ident="linkgrp" mode="delete"/>
+
+        <elementSpec module="core" ident="listbibl" mode="delete"/>
+
+        <elementSpec module="analysis" ident="m" mode="delete"/>
+
+        <elementSpec module="core" ident="measure" mode="delete"/>
+
+        <elementSpec module="core" ident="measuregrp" mode="delete"/>
+
+        <elementSpec module="core" ident="meeting" mode="delete"/>
+
+        <elementSpec module="core" ident="mentioned" mode="delete"/>
+
+        <elementSpec module="core" ident="monogr" mode="delete"/>
+
+        <elementSpec module="header" ident="namespace" mode="delete"/>
+
+        <elementSpec module="header" ident="normalization" mode="delete"/>
+
+        <elementSpec module="analysis" ident="phr" mode="delete"/>
+
+        <elementSpec module="header" ident="profiledec" mode="delete"/>
+
+        <elementSpec module="header" ident="profiledesc" mode="delete"/>
+
+        <elementSpec module="header" ident="refsdecl" mode="delete"/>
+
+        <elementSpec module="header" ident="refstate" mode="delete"/>
+
+        <elementSpec module="core" ident="relateditem" mode="delete"/>
+
+        <elementSpec module="header" ident="rendition" mode="delete"/>
+
+        <elementSpec module="header" ident="seriesstmt" mode="delete"/>
+
+        <elementSpec module="analysis" ident="span" mode="delete"/>
+
+        <elementSpec module="analysis" ident="spangrp" mode="delete"/>
+
+        <elementSpec module="header" ident="sponsor" mode="delete"/>
+
+        <elementSpec module="header" ident="stdvals" mode="delete"/>
+
+        <elementSpec module="core" ident="street" mode="delete"/>
+
+        <elementSpec module="core" ident="time" mode="delete"/>
+
+        <elementSpec module="linking" ident="timeline" mode="delete"/>
+
+        <elementSpec module="linking" ident="when" mode="delete"/>
+          
+          <!-- ********************** -->
+          <!-- macro addition section -->
+          <!-- ********************** -->
+          <!-- We refer to this complicated content model more than once, so I've -->
+          <!-- factored it out into a macro for ease of modification. It is used -->
+          <!-- in <note> and <postscript>. -->
+          <macroSpec ident="macro.noteContent" mode="add">
+              <content>
+                  <rng:choice>
+                      <rng:group>
+                          <rng:zeroOrMore>
+                              <rng:ref name="model.global"/>
+                          </rng:zeroOrMore>
+                          <rng:group>
+                              <rng:zeroOrMore>
+                                  <rng:ref name="model.noteTop"/>
+                                  <rng:zeroOrMore>
+                                      <rng:ref name="model.global"/>
+                                  </rng:zeroOrMore>
+                              </rng:zeroOrMore>
+                              <rng:group>
+                                  <rng:oneOrMore>
+                                      <rng:ref name="model.notePart"/>
+                                      <rng:zeroOrMore>
+                                          <rng:ref name="model.global"/>
+                                      </rng:zeroOrMore>
+                                  </rng:oneOrMore>
+                                  <rng:zeroOrMore>
+                                      <rng:ref name="model.noteBottom"/>
+                                      <rng:zeroOrMore>
+                                          <rng:ref name="model.global"/>
+                                      </rng:zeroOrMore>
+                                  </rng:zeroOrMore>
+                              </rng:group>
+                          </rng:group>
+                      </rng:group>
+                      <rng:oneOrMore>
+                          <rng:ref name="byline"/>
+                          <rng:zeroOrMore>
+                              <rng:ref name="model.global"/>
+                          </rng:zeroOrMore>
+                      </rng:oneOrMore>
+                  </rng:choice>
+              </content>
+          </macroSpec>
+          
+          <!-- ******************** -->
+          <!-- new class subsection -->
+          <!-- ******************** -->
+          <classSpec ident="model.noteTop" type="model" mode="add">
+              <desc>groups together elements that may appear at the top of a <gi>note</gi> or
+                  <gi>postscript</gi></desc>
+          </classSpec>
+          <classSpec ident="model.notePart" type="model" mode="add">
+              <desc>groups together components of a <gi>note</gi> or
+                  <gi>postscript</gi></desc>
+          </classSpec>
+          <classSpec ident="model.noteBottom" type="model" mode="add">
+              <desc>groups together elements that may appear at the bottom of a <gi>note</gi>
+                  or <gi>postscript</gi></desc>
+          </classSpec>
+          <classSpec ident="model.headLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.noteTop"/>
+              </classes>
+          </classSpec>
+          <elementSpec ident="opener" module="textstructure" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.noteTop"/>
+              </classes>
+          </elementSpec>
+          <elementSpec ident="label" module="core" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.noteTop"/>
+              </classes>
+          </elementSpec>
+          <classSpec ident="model.biblLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.divPart" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.quoteLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.qLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.listLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.segLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <classSpec ident="model.stageLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <elementSpec ident="castList" module="drama" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </elementSpec>
+          <classSpec ident="model.noteLike" type="model" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.notePart"/>
+              </classes>
+          </classSpec>
+          <elementSpec ident="closer" module="core" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.noteBottom"/>
+              </classes>
+          </elementSpec>
+          <elementSpec ident="trailer" module="core" mode="change">
+              <classes mode="change">
+                  <memberOf key="model.noteBottom"/>
+              </classes>
+          </elementSpec>
+
+      </schemaSpec>
+    </body>
+  </text>
+</TEI>

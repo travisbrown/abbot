@@ -1,0 +1,241 @@
+<?xml version="1.0"?>
+<TEI xmlns:rng="http://relaxng.org/ns/structure/1.0" xmlns:s="http://www.ascc.net/xml/schematron"
+    xmlns:tei="http://www.tei-c.org/ns/1.0" xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>MONK_TEI_Simple</title>
+                <author>Brian Pytlik Zillig, Syd Bauman, Julia Flanders, and Steve Ramsay</author>
+            </titleStmt>
+            <publicationStmt>
+                <p>for use by the MONK Project</p>
+            </publicationStmt>
+            <sourceDesc>
+                <p>created on Wednesday 10th October 2007 01:33:55 PM by the form at
+                    http://www.tei-c.org.uk/Roma/</p>
+            </sourceDesc>
+        </fileDesc>
+    </teiHeader>
+    <text>
+        <front>
+            <divGen type="toc"/>
+        </front>
+        <body>
+            <p>Target schema for MONK ingestion transformation.</p>
+            <schemaSpec ident="TEIsimple" docLang="en" xml:lang="en" prefix="monk_">
+                <!-- load modules of interest -->
+                <moduleRef key="core"/>
+                <moduleRef key="tei"/>
+                <moduleRef key="header"/>
+                <moduleRef key="textstructure"/>
+                <moduleRef key="transcr"/>
+                <moduleRef key="analysis"/>
+                <moduleRef key="figures"/>
+                <moduleRef key="gaiji"/>       
+                <moduleRef key="linking"/>
+
+                <!-- Add sb element -->
+                <elementSpec ident="sb" mode="add">
+                    <gloss>sentence break</gloss>
+                    <desc>signals a break between sentences.</desc>
+                    <content>
+                        <rng:empty/>
+                    </content>
+                    <classes>
+                        <memberOf key="model.milestoneLike"/>
+                    </classes>
+                </elementSpec>
+
+                <!-- change hi tag so it can be child of w -->
+                <elementSpec ident="hi" mode="change">
+                    <equiv/>
+                    <gloss>highlighted text</gloss>
+                    <desc> (highlighted) marks a word or phrase as graphically distinct from the
+                        surrounding text, for reasons concerning which no claim is made. </desc>
+                    <datatype>
+                        <rng:ref name="att.global.attributes"/>
+                        <rng:ref name="macro.xtext"/>
+                    </datatype>
+                    <classes>
+                        <memberOf key="model.hiLike"/>
+                    </classes>
+                    <content>
+                        <rng:text/>
+                    </content>
+                </elementSpec>
+
+                <!-- make the @scheme of keywords element optional -->
+                <elementSpec ident="keywords" module="header" mode="change">
+                    <attList>
+                        <attDef ident="scheme" mode="change" usage="opt">
+                            <desc>identifies the controlled vocabulary within which the set
+                                of&#xD; keywords concerned is defined.</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.pointer"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <!-- Our titles should not have any internal markup when -->
+                <!-- they're in the <teiHeader> -->
+                <elementSpec ident="title" mode="change">
+                    <content>
+                        <rng:ref name="macro.paraContent"/>
+                        <s:pattern name="Inside header, titles must be plain text">
+                            <s:rule context="tei:teiHeader//tei:title">
+                                <s:report test="*"> Titles should not have child elements in
+                                    teiHeader </s:report>
+                            </s:rule>
+                        </s:pattern>
+                    </content>
+                </elementSpec>
+                
+                <!-- switch w to model.segLike -->
+                <elementSpec ident="w" mode="change">
+                    <classes>
+                        <memberOf key="model.segLike"/>
+                    </classes>
+                    <content>
+                            <rng:optional>
+                                <rng:attribute name="subtype">
+                                    <rng:ref name="data.word"/>
+                                </rng:attribute>
+                            </rng:optional>
+                            <rng:ref name="macro.paraContent"/>
+                    </content>
+                </elementSpec>
+                
+                <!-- The extent element should *always* be specified as only a number, -->
+                <!-- which is the number of bytes -->
+                
+                <!-- 
+                <elementSpec module="header" usage="opt" ident="extent" mode="change">
+                    <content>
+                        <rng:ref name="data.numeric"/>
+                    </content>
+                </elementSpec>
+                -->
+
+                <!-- delete elements not of interest -->
+                <elementSpec module="textstructure" ident="div1" mode="delete"/>
+                <elementSpec module="textstructure" ident="div2" mode="delete"/>
+                <elementSpec module="textstructure" ident="div3" mode="delete"/>
+                <elementSpec module="textstructure" ident="div4" mode="delete"/>
+                <elementSpec module="textstructure" ident="div5" mode="delete"/>
+                <elementSpec module="textstructure" ident="div6" mode="delete"/>
+                <elementSpec module="core" ident="abbr" mode="delete"/>
+                <elementSpec module="core" ident="expan" mode="delete"/>
+                <elementSpec module="transcr" ident="addSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="damage" mode="delete"/>
+                <elementSpec module="transcr" ident="damageSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="delSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="facsimile" mode="delete"/>
+                <elementSpec module="transcr" ident="fw" mode="delete"/>
+                <elementSpec module="transcr" ident="hand" mode="delete"/>
+                <elementSpec module="transcr" ident="handList" mode="delete"/>
+                <elementSpec module="transcr" ident="handShift" mode="delete"/>
+                <elementSpec module="transcr" ident="space" mode="delete"/>
+                <elementSpec module="transcr" ident="subst" mode="delete"/>
+                <elementSpec module="transcr" ident="supplied" mode="delete"/>
+                <elementSpec module="transcr" ident="surface" mode="delete"/>
+                <elementSpec module="transcr" ident="zone" mode="delete"/>
+                <elementSpec module="gaiji" ident="char" mode="delete"/>
+                <elementSpec module="gaiji" ident="charDecl" mode="delete"/>
+                <elementSpec module="gaiji" ident="charProp" mode="delete"/>
+                <elementSpec module="gaiji" ident="glyph" mode="delete"/>
+                <elementSpec module="gaiji" ident="glyphName" mode="delete"/>
+                <elementSpec module="gaiji" ident="localName" mode="delete"/>
+                <elementSpec module="gaiji" ident="mapping" mode="delete"/>
+                <elementSpec module="gaiji" ident="unicodeName" mode="delete"/>
+                <elementSpec module="gaiji" ident="value" mode="delete"/>
+                <elementSpec module="figures" ident="formula" mode="delete"/>
+                <elementSpec module="core" ident="binaryObject" mode="delete"/>
+                <elementSpec module="core" ident="postBox" mode="delete"/>
+                <elementSpec module="core" ident="postCode" mode="delete"/>
+                <elementSpec module="transcr" ident="restore" mode="delete"/>
+                
+                
+                <!-- elements removed 11/22/07 -->
+                <elementSpec module="core" ident="abbr" mode="delete"/>
+                <elementSpec module="transcr" ident="am" mode="delete"/>
+                <elementSpec module="core" ident="analytic" mode="delete"/>
+                <elementSpec module="linking" ident="anchor" mode="delete"/>
+                <elementSpec module="header" ident="appinfo" mode="delete"/>
+                <elementSpec module="header" ident="application" mode="delete"/>
+                <elementSpec module="header" ident="authority" mode="delete"/>
+                <elementSpec module="core" ident="biblscope" mode="delete"/>
+                <elementSpec module="core" ident="biblstruct" mode="delete"/>
+                <elementSpec module="drama" ident="castgroup" mode="delete"/>
+                <elementSpec module="drama" ident="castitem" mode="delete"/>
+                <elementSpec module="header" ident="catref" mode="delete"/>
+                <elementSpec module="core" ident="cb" mode="delete"/>
+                <elementSpec module="gaiji" ident="charname" mode="delete"/>
+                <elementSpec module="analysis" ident="cl" mode="delete"/>
+                <elementSpec module="header" ident="classcode" mode="delete"/>
+                <elementSpec module="header" ident="classdecl" mode="delete"/>
+                <elementSpec module="header" ident="correction" mode="delete"/>
+                <elementSpec module="header" ident="creation" mode="delete"/>
+                <elementSpec module="header" ident="crefpattern" mode="delete"/>
+                <elementSpec module="core" ident="del" mode="delete"/>
+                <elementSpec module="core" ident="desc" mode="delete"/>
+                <elementSpec module="core" ident="distinct" mode="delete"/>
+                <elementSpec module="header" ident="distributor" mode="delete"/>
+                <elementSpec module="core" ident="divgen" mode="delete"/>
+                <elementSpec module="drama" ident="epilogue" mode="delete"/>
+                <elementSpec module="transcr" ident="ex" mode="delete"/>
+                <elementSpec module="header" ident="funder" mode="delete"/>
+                <elementSpec module="header" ident="geodecl" mode="delete"/>
+                <elementSpec module="core" ident="gloss" mode="delete"/>
+                <elementSpec module="core" ident="graphic" mode="delete"/>
+                <elementSpec module="header" ident="handnote" mode="delete"/>
+                <elementSpec module="transcr" ident="handnotes" mode="delete"/>
+                <elementSpec module="core" ident="headitem" mode="delete"/>
+                <elementSpec module="core" ident="headlabel" mode="delete"/>
+                <elementSpec module="header" ident="hyphenation" mode="delete"/>
+                <elementSpec module="core" ident="imprint" mode="delete"/>
+                <elementSpec module="core" ident="index" mode="delete"/>
+                <elementSpec module="analysis" ident="interp" mode="delete"/>
+                <elementSpec module="analysis" ident="interpgrp" mode="delete"/>
+                <elementSpec module="header" ident="interpretation" mode="delete"/>
+                <elementSpec module="linking" ident="join" mode="delete"/>
+                <elementSpec module="linking" ident="joingrp" mode="delete"/>
+                <elementSpec module="linking" ident="linkgrp" mode="delete"/>
+                <elementSpec module="core" ident="listbibl" mode="delete"/>
+                <elementSpec module="analysis" ident="m" mode="delete"/>
+                <elementSpec module="core" ident="measure" mode="delete"/>
+                <elementSpec module="core" ident="measuregrp" mode="delete"/>
+                <elementSpec module="core" ident="meeting" mode="delete"/>
+                <elementSpec module="core" ident="mentioned" mode="delete"/>
+                <elementSpec module="core" ident="monogr" mode="delete"/>
+                <elementSpec module="header" ident="namespace" mode="delete"/>
+                <elementSpec module="header" ident="normalization" mode="delete"/>
+                <elementSpec module="analysis" ident="phr" mode="delete"/>
+                <elementSpec module="header" ident="profiledec" mode="delete"/>
+                <elementSpec module="header" ident="profiledesc" mode="delete"/>
+                <elementSpec module="header" ident="refsdecl" mode="delete"/>
+                <elementSpec module="header" ident="refstate" mode="delete"/>
+                <elementSpec module="core" ident="relateditem" mode="delete"/>
+                <elementSpec module="header" ident="rendition" mode="delete"/>
+                <elementSpec module="drama" ident="role" mode="delete"/>
+                <elementSpec module="drama" ident="roledesc" mode="delete"/>
+                <elementSpec module="header" ident="seriesstmt" mode="delete"/>
+                <elementSpec module="analysis" ident="span" mode="delete"/>
+                <elementSpec module="analysis" ident="spangrp" mode="delete"/>
+                <elementSpec module="header" ident="sponsor" mode="delete"/>
+                <elementSpec module="header" ident="stdvals" mode="delete"/>
+                <elementSpec module="core" ident="street" mode="delete"/>
+                <!--
+                    <elementSpec module="ZZZZZZ" ident="sub" mode="delete"/>
+                    <elementSpec module="ZZZZZZ" ident="sup" mode="delete"/>
+                -->
+                <elementSpec module="core" ident="time" mode="delete"/>
+                <elementSpec module="linking" ident="timeline" mode="delete"/>
+                <elementSpec module="linking" ident="when" mode="delete"/>
+                
+                
+                
+            </schemaSpec>
+        </body>
+    </text>
+</TEI>

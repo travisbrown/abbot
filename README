@@ -1,0 +1,82 @@
+
+
+   _   _     _           _   
+  /_\ | |__ | |__   ___ | |_ 
+ /_\\\| '_ \| '_ \ / _ \| __|
+/  _  \ |_) | |_) | (_) | |_
+\_/ \_/_.__/|_.__/ \___/ \__|
+    Your Texts Reloaded    
+
+=== WHO? ===
+
+Abbot was developed by Brian Pytlik-Zillig, Stephen Ramsay, and Martin Mueller for The MONK Project (http://www.monkproject.org/), and is distributed under the terms of an OSI-compatible license (see LICENSE for details).
+
+=== WHAT? ===
+
+Abbot is a suite of preprocessing scripts for the MONK project.  In general, Abbot coordinates two phases of text preparation:
+
+1. Normalization of XML-like text collections into TEI-A -- an XML format designed to facilitate corpus-based text analysis.
+
+2. Validation of the converted files.
+
+=== WHEN? ====
+
+As soon as you're done reading this important announcement.
+
+=== WHERE? ===
+
+All of the code for Abbot is written using a combination of (bash) shell, Java, and XSLT.  It was designed to run on UNIX-like systems and avails itself of a number of standard UNIX utilities (such as those found in the GNU coreutils package).
+
+We would hesitate to run it using a version of Java lower than 1.5.  We would also hesitate to run it on a system that did not have a fast processor and at least 8 gigs of RAM.  Some text collections can take many hours to convert even with the latest server hardware.  Your mileage may vary.  A lot.
+
+=== HOW? ===
+
+The first phase of the conversion reads the DTD/Schema of the target collection and uses the information found within to generate a customized stylesheet that can affect the conversion from the target to TEI-A.  This method, which we call "schema harvesting," is remarkably robust, but it cannot perform miracles.  If your texts do not parse or contain a lot of irregular constructions, you will probably need to do some pre-processing prior to the pre-processing with Abbot.  
+
+Abbot is set up as a pipeline (with abbot.sh as the main controlling file).  If you look in that file, you'll references to a series of modular shell scripts, most of which perform quick corrections on the converted files.  We used Abbot to convert some very large, and very well known text collections, and so these scripts contain adjustments for common errors and irregularities (including some that are unavoidably introduced through schema harvesting).  You may find it useful to use these scripts as a guide, adding to the pipeline and adjusting the existing scripts for your own circumstances.
+
+The second phase pass involves validation of converted files against the TEI-A schema using Sun's Multi-Schema XML Validator (MSV).  The TEI-A schema itself is located here: http://segonku.unl.edu/teianalytics/.  Documentation for the schema is located at http://segonku.unl.edu/teianalytics/TEIAnalytics_doc.html.
+
+Running abbot is simply a matter of:
+
+abbot.sh [target_dir]
+
+Abbot will write the results to the "output" directory.  Invalid files are sent to the "quarantine" directory for review.     
+
+Please note that abbot is self contained and ships with all the necessary libraries.  You should run it from the abbot directory and leave everything as it is.
+
+=== HUH? ===
+
+1. Why I do I need to leave everything as it is?
+
+Abbot was developed for in-house use on the MONK project, and we didn't see any need to write an installer.  We could make one if enough people think it would be useful.  You can probably do it yourself, if you don't mind fooling around with CLASSPATH and PATH variables.  You can also adjust the main script slightly so that it works more transparently with pipes and redirection operators.
+
+2. Shell scripts?  Sed?  Are you kidding?
+
+Abbot spends most of its time controlling other applications (like Saxon and MSV), and we think the shell is ideal for exactly this sort of thing.  Since speed becomes a factor with large text-processing jobs, we prefer small, fast apps like sed and grep (which are written in C) to their equivalents in the Java (Ruby, Python, etc.) API.
+
+3. Do my texts have to be valid?  Well formed?  Can they be in SGML?
+
+Your texts don't have to be perfect.  However, we found ourselves doing a lot of hacking (some prior to the run, some within the Abbot pipeline) to get it to work.  If your texts are valid, well formed, and in XML, it should work right out of the box. We have used Abbot to transform several SGML collections, though a bit of preprocessing (via James Clark's OSX application) was required to get the files into XML first.
+
+4. Can I use Abbot to migrate my texts from P4 to P5?
+
+Yes, you can, since TEI-A is P5 compliant. However, we consider this a side effect of Abbot, insofar as we did not explicitly create a tool for this purpose.  Since your goals likely go beyond the needs of corpus-based text analysis, you may find that there are some gaps.  That said, Abbot is a remarkably good P4 to P5 converter in most ordinary circumstances.
+
+5. What about part-of-speech tagging, lemmatization, tokenization, sentence splitting, and named-entity extraction?  Don't you need all that for corpus-based text analysis?
+
+Yes!  And this exactly what we did for MONK, but not with this tool.  The next stage of the MONK pre-processing pipeline (after Abbot) used MorphAdorner -- an *amazing* program that does all of the above.  MorphAdorner was written by the inimmitable Phil "Pib" Burns and Northwestern.  It is particularly adept when it comes to handing TEI-A files.  You can read all about it at:
+
+http://morphadorner.northwestern.edu/
+
+5. This is great!  When are you going to turn it into a real userland tool?
+
+Thanks, we are thinking about doing something like that.  We'd also like it to take advantage of multi-core systems, maybe have some kind of GUI, produce better logging and reporting, and make it easier to customize.
+
+6. This sucks!  When are you going to make it into a real userland tool?
+
+We're sorry.  If you have specific suggestions, bug reports, or feature requests, please feel free to contact the developers:
+
+Brian Pytlik-Zillig «bpytlikz@unlnotes.unl.edu»
+Stephen Ramsay «sramsay.unl@gmail.com»
+Martin Mueller «martinmueller@northwestern.edu»
